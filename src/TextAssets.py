@@ -123,7 +123,7 @@ def silentis() -> None:
                 name                    = "\r         " + s1 + i1 + l + e + n + t + i2 + s2
                 sys_print(name)
                 flush()
-                time.sleep(0.04)
+                time.sleep(0.02)
 
         sys_print("\n\n")
         flush()
