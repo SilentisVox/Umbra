@@ -33,9 +33,11 @@ def main() -> None:
                 while True:
                         user_input      = input(prompt())
                         command_handler.command(user_input)
+
         except KeyboardInterrupt:
                 info("Exiting ...")
                 command_handler.eradicate()
+
         except Exception as exception:
                 error("Exception: {}".format(exception))
                 command_handler.eradicate()
