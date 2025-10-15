@@ -156,18 +156,23 @@ class UmbraServer:
 
                 if not self.peek(client):
                         client.close()
-                        return False
+                        return
 
                 if not self.valid_request(client):
                         client.close()
-                        return False
+                        return
 
 
                 if not self.sent_payload(client, client_key):
                         client.close()
-                        return False
+                        return
 
                 tls                     = self.recvall(client, 5)
+
+                if not tls:
+                        client.close()
+                        return
+
                 length                  = int.from_bytes(tls[3:])
                 data                    = self.recvall(client, length)
                 data                    = Payload.decrypt(data, client_key)
