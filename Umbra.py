@@ -10,7 +10,7 @@ def main() -> None:
         parser                          = argparse.ArgumentParser()
         parser.add_argument("-c", type=str, help="Callback address")
         parser.add_argument("-p", type=int, help="HTTPS Handler port (Default 443)", default=443)
-        parser.add_argument("-d", type=int, help="Client dwell time.", default=2000)
+        parser.add_argument("-d", type=int, help="Client dwell time in milliseconds.", default=2000)
         args                            = parser.parse_args()
 
         if not args.c:
@@ -20,8 +20,9 @@ def main() -> None:
         umbra_server                    = UmbraServer()
         umbra_server.callback_ip        = args.c
         umbra_server.callback_port      = args.p
+        umbra_server.time               = args.d
 
-        if not umbra_server.startup(("0.0.0.0", int(args.p))):
+        if not umbra_server.startup(("0.0.0.0", args.p)):
                 return
 
         command_handler                 = CommandHandler()
