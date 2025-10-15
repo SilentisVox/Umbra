@@ -150,6 +150,7 @@ class UmbraServer:
         @Public.Method
         def verify(self, client: socket.socket) -> None:
                 client.setsockopt(socket.SOL_SOCKET, socket.SO_LINGER, b"\x01\x00\x00\x00\x00\x00\x00\x00") # <- RST/ACK
+                client.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1) # Linux and Windows flexibilty
                 client.setblocking(False)
                 client_key              = random.randbytes(1024)
 
