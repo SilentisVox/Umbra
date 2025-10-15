@@ -40,7 +40,7 @@ python3 Umbra.py [-h] -c [callback_address] -p [callback_port]
   <sup>Video Demo on YouTube</sup>
   <br>
   <a href="https://youtu.be/Bwfp2rMmimc">
-    <img src="assets/Silence.jpg" alt="Demo" />
+    <img src="assets/Umbra.jpg" alt="Demo" />
   </a>
 </p>
 
