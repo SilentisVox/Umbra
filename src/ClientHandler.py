@@ -34,26 +34,30 @@ class ClientHandler:
         def begin_communication(self) -> None:
                 info("Begininng communication. (type 'CTRL+C' to quit)")
 
-                while self.running:
-                        if self.queue:
-                                continue
-                        try:
+                self.sprint(self.client.pending)
+                self.client.pending     = b""
+
+                try:
+                        while self.running:
+                                if self.queue:
+                                        time.sleep(0.1)
+                                        continue
+
                                 self.queue_command(input())
-                        except KeyboardInterrupt:
-                                info("Backgrounding client...")
-                                self.thwart()
-                        except Exception as exception:
-                                error("Exception: {}".format())
-                                self.thwart()
+
+                except KeyboardInterrupt:
+                        info("Backgrounding client...")
+                        self.thwart()
+
+                except Exception as exception:
+                        error("Exception: {}".format())
+                        self.thwart()
 
         @Public.Method
         def sate(self) -> None:
                 while self.running:
                         if self.client.status == "Lost":
                                 return
-
-                        #if self.pending:
-                        #        self.sprint(self.pending)
 
                         if not self.peek():
                                 continue
@@ -145,8 +149,10 @@ class ClientHandler:
                 try:
                         self.client.connection.recv(1, socket.MSG_PEEK)
                         return True
+
                 except BlockingIOError:
                         return False
+
                 except Exception as exception:
                         error("Exception: {}".format(exception))
                         self.warn()
