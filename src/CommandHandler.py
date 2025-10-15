@@ -210,6 +210,7 @@ class CommandHandler:
 
         @Private.Method
         def kill(self, client_identifier: str) -> None:
+                client_identifier       = client_identifier.upper()
                 client                  = self.umbra_server.clients[client_identifier]
 
                 if client_identifier not in self.umbra_server.clients:
