@@ -8,9 +8,9 @@ import time
 import random
 import threading
 
-# One solution for orginization of server components and client accessibility is to
+# One solution for organization of server components and client accessibility is to
 # use classes. Classes offer public memory addresses that can offer ease of use and
-# a "standardized" orginization of components.
+# a "standardized" organization of components.
 
 class ServerComponents:
         def __init__(self) -> None:
@@ -139,12 +139,12 @@ class UmbraServer:
                                 debug("Exception: {}".format(exception))
                                 break
 
-                        cleint_verifier = threading.Thread(
+                        client_verifier = threading.Thread(
                                 target  = self.verify,
                                 args    = (client,),
                                 daemon  = True
                         )
-                        cleint_verifier.start()
+                        client_verifier.start()
 
                 self.server.running     = False
                 self.server.shutdown    = False
@@ -277,7 +277,7 @@ class UmbraServer:
                         if client.in_use:
                                 continue
 
-                        if self.peek(session):
+                        if self.peek(connection):
                                 continue
 
                         client.status   = "Lost"
@@ -285,15 +285,6 @@ class UmbraServer:
         # Our client will be continuously checking if we have a command to execute.
         # We want something for our client to digest, while we are not in session
         # with the client to remain compliant with normal HTTP traffic.
-
-        @Public.Method
-        def slake(self, connection: socket.socket, identifier: str, key: bytes) -> None:
-                while True:
-                        if self.clients[identifier].status == "Lost":
-                                break
-
-                        if self.clients[identifier].in_use:
-                                continue
 
         @Public.Method
         def kill(self) -> None:
