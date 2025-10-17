@@ -16,9 +16,6 @@ def sys_print(user_input: str) -> None:
 def flush() -> None:
         sys.stdout.flush()
 
-def get_help() -> None:
-        return
-
 def white(user_input: str) -> str:
         return "\033[38;2;255;255;255m{}\033[0m".format(user_input)
 
