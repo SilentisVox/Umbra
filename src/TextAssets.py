@@ -72,7 +72,7 @@ def prompt() -> str:
         return "\r{}Umbra{}> ".format(UNDER, END)
 
 def banner() -> None:
-        unfromatted_banner                      = "┬ ┬┌┬┐┬─┐┬─┐┌─┐│ ││││├─┤├┬┘├─┤└─┘┴│┴┴─┘┴└ ┴ ┴"
+        unformatted_banner                      = "┬ ┬┌┬┐┬─┐┬─┐┌─┐│ ││││├─┤├┬┘├─┤└─┘┴│┴┴─┘┴└ ┴ ┴"
         colors                                  = [
                 (145, 145, 145), (129, 129, 129), (145, 145, 145), (140, 140, 140),
                 (132, 132, 132), (125, 125, 125), (125, 125, 125), (126, 126, 126),
@@ -87,7 +87,7 @@ def banner() -> None:
                 (43, 43, 43),    (43, 43, 43),    (43, 43, 43),    (94, 94, 94), 
                 (124, 124, 124)
         ]
-        formatted_banner                = unfromatted_banner.replace("\n", "")
+        formatted_banner                = unformatted_banner.replace("\n", "")
         finished                        = ""
         
         for index, character in enumerate(formatted_banner):
