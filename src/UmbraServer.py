@@ -154,11 +154,6 @@ class UmbraServer:
                 client.setsockopt(socket.SOL_SOCKET, socket.SO_LINGER, b"\x01\x00\x00\x00\x00\x00\x00\x00") # <- RST/ACK
                 client.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1) # Linux and Windows flexibilty
 
-                try:
-                        client.setsockopt(socket.IPPROTO_IP, 14, 1)
-                except:
-                        client.setsockopt(socket.IPPROTO_IP, 10, 2)
-
                 client.setblocking(False)
                 client_key              = random.randbytes(1024)
 
