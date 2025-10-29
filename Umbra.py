@@ -8,9 +8,13 @@ def main() -> None:
         banner()
 
         parser                          = argparse.ArgumentParser()
+        group                           = parser.add_mutually_exclusive_group()
+
         parser.add_argument("-c", type=str, help="Callback address")
         parser.add_argument("-p", type=int, help="HTTPS Handler port (Default 443)", default=443)
         parser.add_argument("-d", type=int, help="Client dwell time in milliseconds.", default=2000)
+        group.add_argument("-v",  action="store_true", default=False, help="All debug messages visible.")
+
         args                            = parser.parse_args()
 
         if not args.c:
@@ -20,14 +24,15 @@ def main() -> None:
         umbra_server                    = UmbraServer()
         umbra_server.callback_ip        = args.c
         umbra_server.callback_port      = args.p
-        umbra_server.time               = args.d
+        umbra_server.receiver.time      = args.d
+        umbra_server.verbosity          = args.v
 
         if not umbra_server.startup(("0.0.0.0", args.p)):
                 return
 
         command_handler                 = CommandHandler()
         command_handler.umbra_server    = umbra_server
-        command_handler.command("generate encoded")
+        command_handler.command("generate")
 
         try:
                 while True:
