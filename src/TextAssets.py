@@ -43,21 +43,36 @@ def custom(user_input: str, color: tuple[int, int, int]) -> str:
 def timey() -> str:
         return datetime.datetime.now().strftime("%H:%M:%S")
 
-def info(user_input: str) -> None:
+def info(user_input: str, prompt_needed: bool = False) -> None:
         sys_print("\r[{}] [{}] {}\n".format(teal(timey()), blue("INFO"), user_input))
+
+        if prompt_needed:
+                sys_print(prompt())
+
         flush()
 
-def debug(user_input: str) -> None:
+def debug(user_input: str, prompt_needed: bool = False) -> None:
         sys_print("\r[{}] [{}] {}\n".format(teal(timey()), yorange("DBUG"), user_input))
+
+        if prompt_needed:
+                sys_print(prompt())
+
         flush()
 
-def success(user_input: str) -> None:
+def success(user_input: str, prompt_needed: bool = False) -> None:
         sys_print("\r[{}] [{}] {}\n".format(teal(timey()), green("DONE"), user_input))
-        sys_print(prompt())
+
+        if prompt_needed:
+                sys_print(prompt())
+
         flush()
 
-def error(user_input: str) -> None:
+def error(user_input: str, prompt_needed: bool = False) -> None:
         sys_print(("\r[{}] [{}] {}\n".format(teal(timey()), red("FAIL"), user_input)))
+
+        if prompt_needed:
+                sys_print(prompt())
+
         flush()
 
 def cursor_on():
