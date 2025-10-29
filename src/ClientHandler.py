@@ -1,5 +1,6 @@
 from src.Utilities  import *
 from src.TLS        import *
+from src.Receiver   import *
 from src.Payload    import *
 from src.TextAssets import *
 
@@ -14,6 +15,7 @@ class ClientHandler:
                 self.queue              = None
                 self.sate_thread        = None
                 self.running            = True
+                self.receiver           = Receiver(2000)
 
         # Our slake method was appeasing the client for the time being. We need to
         # signal slake (in_use attribute), that way, we can begin receiving, parsing,
@@ -88,8 +90,12 @@ class ClientHandler:
 
                 record                  = self.client.connection.recv(5)
                 length                  = int.from_bytes(record[3:])
-                cipher                  = self.client.connection.recv(length)
+                cipher                  = self.receiver.recvall(self.client.connection, length)
                 data                    = Payload.decrypt(cipher, self.client.key)
+
+                if not data:
+                        self.client.connection.close()
+                        return
 
                 if data[0] == request_byte and not self.queue:
                         self.ack()
@@ -142,7 +148,6 @@ class ClientHandler:
                         return
 
                 debug("Press any button to continue.")
-
 
         @Private.Method
         def peek(self) -> bool:
