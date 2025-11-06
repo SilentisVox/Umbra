@@ -186,6 +186,7 @@ class CommandHandler:
         @Private.Method
         def start(self, address: str, port: str, timeout: str = "2000") -> None:
                 if self.umbra_server.server.running:
+                        debug("Server already running.")
                         return
 
                 info("Starting Server at https://0.0.0.0:{}".format(port))
@@ -195,6 +196,7 @@ class CommandHandler:
 
                 if not self.umbra_server.startup((address, int(port))):
                         debug("Server was not started.")
+                        return
 
                 success("Server Successfully Started.")
 
@@ -203,6 +205,7 @@ class CommandHandler:
                 info("Stopping Server at https://0.0.0.0:{}".format(self.umbra_server.server.bind_agent.getsockname()[1]))
 
                 if not self.umbra_server.server.running:
+                        debug("Server already running.")
                         return
 
                 self.umbra_server.kill()
@@ -214,6 +217,7 @@ class CommandHandler:
                 client                  = self.umbra_server.clients[client_identifier]
 
                 if client_identifier not in self.umbra_server.clients:
+                        debug("Client does not exist.")
                         return
 
                 if client.status == "Lost":
