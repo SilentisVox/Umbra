@@ -89,7 +89,7 @@ class ClientComponents:
                 self.connection.send(application)
 
 # A professional attempt at remaining anonymized as well obfuscating traffic between
-# a Command & Control server and a connected clients is to usera realistic server &
+# a Command & Control server and a connected clients is to use a realistic server &
 # client relationship.
 
 # My scandalous approach is to use HTTPS (or what looks like...)
